@@ -1099,6 +1099,57 @@ Delete a mentorship record.
 }
 ```
 
+### Messages
+
+#### List Messages
+**GET** `/messages`
+
+Get a paginated list of all messages.
+
+#### Create Message
+**POST** `/messages`
+
+Create a new email message.
+
+**Request Body:**
+```json
+{
+    "message_type": "general",
+    "channel": "email",
+    "subject": "Test Subject",
+    "content": "Message content",
+    "recipients": ["all_members"],
+    "schedule_type": "immediate"
+}
+```
+
+#### Send Message Now
+**POST** `/messages/{id}/send-now`
+
+Send a draft message immediately.
+
+### Reports
+
+#### Get Attendance Trends
+**GET** `/reports/attendance-trends?start_date=2025-01-01&end_date=2025-01-31`
+
+Get attendance trends over a specified period.
+
+#### Get Member Engagement
+**GET** `/reports/member-engagement`
+
+Get member engagement analytics including engagement rates and top engaged members.
+
+#### Get Class Performance
+**GET** `/reports/class-performance`
+
+Get class performance metrics including attendance rates and top performing classes.
+
+#### Get Mentorship Success
+**GET** `/reports/mentorship-success`
+
+Get mentorship success tracking including completion rates and average duration.
+
 ### Dashboard
 
 #### Get Dashboard Summary

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Notification;
 
 class MessageService
 {
+
     /**
      * Send a message to its recipients
      */
@@ -32,36 +33,21 @@ class MessageService
 
         foreach ($actualRecipients as $recipient) {
             try {
-                if ($message->channel === 'email' && $recipient->user && $recipient->user->email) {
-                    // Send via notification
-                    $recipient->user->notify(
-                        new CustomMessageNotification($subject, $content)
-                    );
-
-                    // Log success
-                    MessageLog::create([
-                        'message_id' => $message->id,
-                        'recipient' => $recipient->user->email,
-                        'channel' => $message->channel,
-                        'result' => 'success',
-                        'response' => ['sent' => true],
-                        'created_at' => now(),
-                    ]);
-
-                    $results['success']++;
+                if ($message->channel === 'email') {
+                    $this->sendEmail($message, $recipient, $subject, $content, $results);
                 } else {
-                    // Log failure - no email or user
+                    // Unknown channel
                     MessageLog::create([
                         'message_id' => $message->id,
                         'recipient' => $recipient->email ?? 'unknown',
                         'channel' => $message->channel,
                         'result' => 'failed',
-                        'response' => ['error' => 'No email address or user account'],
+                        'response' => ['error' => "Unknown channel: {$message->channel}"],
                         'created_at' => now(),
                     ]);
 
                     $results['failed']++;
-                    $results['errors'][] = "No email for {$recipient->full_name}";
+                    $results['errors'][] = "Unknown channel for {$recipient->full_name}";
                 }
             } catch (\Exception $e) {
                 // Log failure
@@ -86,6 +72,45 @@ class MessageService
         ]);
 
         return $results;
+    }
+
+    /**
+     * Send email message
+     */
+    protected function sendEmail(Message $message, Member $recipient, string $subject, string $content, array &$results): void
+    {
+        if (!$recipient->user || !$recipient->user->email) {
+            // Log failure - no email or user
+            MessageLog::create([
+                'message_id' => $message->id,
+                'recipient' => $recipient->email ?? 'unknown',
+                'channel' => $message->channel,
+                'result' => 'failed',
+                'response' => ['error' => 'No email address or user account'],
+                'created_at' => now(),
+            ]);
+
+            $results['failed']++;
+            $results['errors'][] = "No email for {$recipient->full_name}";
+            return;
+        }
+
+        // Send via notification
+        $recipient->user->notify(
+            new CustomMessageNotification($subject, $content)
+        );
+
+        // Log success
+        MessageLog::create([
+            'message_id' => $message->id,
+            'recipient' => $recipient->user->email,
+            'channel' => $message->channel,
+            'result' => 'success',
+            'response' => ['sent' => true],
+            'created_at' => now(),
+        ]);
+
+        $results['success']++;
     }
 
     /**

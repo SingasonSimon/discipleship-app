@@ -17,7 +17,19 @@ class MessageFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'message_type' => $this->faker->randomElement(['welcome', 'class_reminder', 'mentorship_assigned', 'general', 'custom']),
+            'channel' => $this->faker->randomElement(['email', 'sms']),
+            'template' => $this->faker->sentence(),
+            'scheduled_at' => null,
+            'status' => $this->faker->randomElement(['draft', 'scheduled', 'sent', 'failed']),
+            'payload' => [
+                'subject' => $this->faker->sentence(),
+                'recipients' => ['all_members'],
+            ],
+            'sent_at' => null,
+            'metadata' => [
+                'created_by' => 1,
+            ],
         ];
     }
 }

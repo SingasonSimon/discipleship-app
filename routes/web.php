@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MentorshipController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -80,6 +81,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/members/{member}/mentorships', [MentorshipController::class, 'memberMentorships'])->name('mentorships.member');
     Route::get('/mentors/{mentor}/mentorships', [MentorshipController::class, 'mentorMentorships'])->name('mentorships.mentor');
     Route::patch('/mentorships/{mentorship}/status', [MentorshipController::class, 'updateStatus'])->name('mentorships.updateStatus');
+
+    // Reports routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/attendance-trends', [ReportController::class, 'attendanceTrends'])->name('attendance-trends');
+        Route::get('/member-engagement', [ReportController::class, 'memberEngagement'])->name('member-engagement');
+        Route::get('/class-performance', [ReportController::class, 'classPerformance'])->name('class-performance');
+        Route::get('/mentorship-success', [ReportController::class, 'mentorshipSuccess'])->name('mentorship-success');
+    });
 
     // Admin routes
     Route::prefix('admin')->name('admin.')->group(function () {

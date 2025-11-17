@@ -24,6 +24,8 @@ php artisan serve
 
 **Demo Login:** `admin@discipleship.local` / `password`
 
+**Google Sign In:** Configure Google OAuth credentials in `.env` to enable Google Sign In
+
 **API Base URL:** `http://localhost:8000/api/v1`
 
 ## Features
@@ -33,8 +35,9 @@ php artisan serve
 - **Discipleship Classes**: Create and manage classes with mentor assignment and scheduling
 - **Attendance Tracking**: Mark attendance for class sessions with status tracking
 - **Progress Monitoring**: Track spiritual milestones and mentorship relationships
-- **Automated Messaging**: Schedule SMS and email reminders with template support
+- **Automated Messaging**: Schedule email reminders with template support
 - **Dashboard Analytics**: Real-time insights on attendance trends, completion rates, and member engagement
+- **Advanced Reporting**: Comprehensive analytics for attendance trends, member engagement, class performance, and mentorship success
 - **RESTful API**: Complete API for mobile/web clients with token-based authentication
 
 ### User Roles & Permissions
@@ -52,7 +55,7 @@ php artisan serve
 - **API**: Laravel Sanctum for token-based authentication
 - **Queue System**: Database driver (Redis optional)
 - **Mail**: SMTP with Mailhog for development
-- **SMS**: Pluggable interface (Mock driver + AfricasTalking support)
+- **OAuth**: Google Sign In support via Laravel Socialite
 
 ## Installation
 
@@ -97,10 +100,10 @@ php artisan serve
    MAIL_FROM_ADDRESS=noreply@yourdomain.com
    MAIL_FROM_NAME="Discipleship System"
 
-   # SMS Configuration (optional)
-   SMS_DRIVER=mock  # Use 'africas_talking' for production SMS
-   # AT_USERNAME=your_africas_talking_username
-   # AT_API_KEY=your_africas_talking_api_key
+   # Google OAuth Configuration (optional)
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
    ```
 
 4. **Generate application key**
@@ -166,6 +169,36 @@ After seeding, you can log in with these demo credentials:
 - **Pastor**: pastor@discipleship.local / password
 - **Coordinator**: coordinator@discipleship.local / password
 
+### Google Sign In Setup
+
+1. **Create Google OAuth Credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable Google+ API
+   - Go to "Credentials" → "Create Credentials" → "OAuth client ID"
+   - Choose "Web application"
+   - Add authorized redirect URI: `http://localhost:8000/auth/google/callback` (or your production URL)
+   - Copy the Client ID and Client Secret
+
+2. **Update `.env` file:**
+   ```env
+   GOOGLE_CLIENT_ID=your_client_id_here
+   GOOGLE_CLIENT_SECRET=your_client_secret_here
+   GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
+   ```
+
+3. **Install Laravel Socialite:**
+   ```bash
+   composer require laravel/socialite
+   ```
+
+4. **Run migrations:**
+   ```bash
+   php artisan migrate
+   ```
+
+Users can now sign in with Google by clicking the "Sign in with Google" button on the login page.
+
 ### API Usage
 
 The system provides a complete REST API at `/api/v1/`. All API endpoints require authentication via Sanctum tokens.
@@ -212,9 +245,9 @@ curl -X GET http://localhost:8000/api/v1/dashboard/summary \
 - `MAIL_*`: SMTP configuration for email sending
 
 ### Optional
-- `SMS_DRIVER`: SMS provider (`mock` or `africas_talking`)
-- `AT_USERNAME`: AfricasTalking username (when using AT SMS)
-- `AT_API_KEY`: AfricasTalking API key (when using AT SMS)
+- `GOOGLE_CLIENT_ID`: Google OAuth Client ID (for Google Sign In)
+- `GOOGLE_CLIENT_SECRET`: Google OAuth Client Secret
+- `GOOGLE_REDIRECT_URI`: Google OAuth redirect URI (default: `http://localhost:8000/auth/google/callback`)
 - `REDIS_*`: Redis configuration (for caching and queues)
 - `QUEUE_CONNECTION`: Queue driver (`database`, `redis`, `sqs`)
 

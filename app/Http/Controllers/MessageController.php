@@ -10,9 +10,12 @@ use Illuminate\View\View;
 
 class MessageController extends Controller
 {
-    public function __construct()
+    protected MessageService $messageService;
+
+    public function __construct(MessageService $messageService)
     {
         $this->middleware('auth');
+        $this->messageService = $messageService;
     }
 
     /**
@@ -133,8 +136,7 @@ class MessageController extends Controller
                 ->with('error', 'Only draft messages can be sent immediately.');
         }
 
-        $service = new MessageService();
-        $results = $service->sendMessage($message);
+        $results = $this->messageService->sendMessage($message);
 
         if ($results['success'] > 0) {
             return redirect()->back()
@@ -150,7 +152,6 @@ class MessageController extends Controller
      */
     public function sendScheduled(Request $request): RedirectResponse
     {
-        $service = new MessageService();
         $messages = Message::where('status', 'scheduled')
             ->whereNotNull('scheduled_at')
             ->where('scheduled_at', '<=', now())
@@ -162,7 +163,7 @@ class MessageController extends Controller
 
         foreach ($messages as $message) {
             try {
-                $results = $service->sendMessage($message);
+                $results = $this->messageService->sendMessage($message);
                 $totalSent += $results['success'];
                 $totalFailed += $results['failed'];
                 $errors = array_merge($errors, $results['errors']);

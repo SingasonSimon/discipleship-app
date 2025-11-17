@@ -35,6 +35,16 @@ Route::prefix('v1')->group(function () {
         // Dashboard
         Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
 
+        // Messages
+        Route::apiResource('messages', \App\Http\Controllers\Api\MessageController::class)->names([
+            'index' => 'api.messages.index',
+            'store' => 'api.messages.store',
+            'show' => 'api.messages.show',
+            'update' => 'api.messages.update',
+            'destroy' => 'api.messages.destroy',
+        ]);
+        Route::post('/messages/{message}/send-now', [\App\Http\Controllers\Api\MessageController::class, 'sendNow'])->name('api.messages.sendNow');
+
         // Members
         Route::apiResource('members', MemberController::class)->names([
             'index' => 'api.members.index',
@@ -98,6 +108,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/mentorships/statistics', [MentorshipController::class, 'statistics'])->name('api.mentorships.statistics');
         Route::get('/mentorships/mentors', [MentorshipController::class, 'mentors'])->name('api.mentorships.mentors');
         Route::get('/mentorships/available-members', [MentorshipController::class, 'availableMembers'])->name('api.mentorships.availableMembers');
+
+        // Reports
+        Route::get('/reports/attendance-trends', [\App\Http\Controllers\Api\ReportController::class, 'attendanceTrends'])->name('api.reports.attendanceTrends');
+        Route::get('/reports/member-engagement', [\App\Http\Controllers\Api\ReportController::class, 'memberEngagement'])->name('api.reports.memberEngagement');
+        Route::get('/reports/class-performance', [\App\Http\Controllers\Api\ReportController::class, 'classPerformance'])->name('api.reports.classPerformance');
+        Route::get('/reports/mentorship-success', [\App\Http\Controllers\Api\ReportController::class, 'mentorshipSuccess'])->name('api.reports.mentorshipSuccess');
 
     });
 
