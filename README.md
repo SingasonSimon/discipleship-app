@@ -24,8 +24,6 @@ php artisan serve
 
 **Demo Login:** `admin@discipleship.local` / `password`
 
-**Google Sign In:** Configure Google OAuth credentials in `.env` to enable Google Sign In
-
 **API Base URL:** `http://localhost:8000/api/v1`
 
 ## Features
@@ -55,7 +53,6 @@ php artisan serve
 - **API**: Laravel Sanctum for token-based authentication
 - **Queue System**: Database driver (Redis optional)
 - **Mail**: SMTP with Mailhog for development
-- **OAuth**: Google Sign In support via Laravel Socialite
 
 ## Installation
 
@@ -100,10 +97,6 @@ php artisan serve
    MAIL_FROM_ADDRESS=noreply@yourdomain.com
    MAIL_FROM_NAME="Discipleship System"
 
-   # Google OAuth Configuration (optional)
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
-   GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
    ```
 
 4. **Generate application key**
@@ -169,36 +162,6 @@ After seeding, you can log in with these demo credentials:
 - **Pastor**: pastor@discipleship.local / password
 - **Coordinator**: coordinator@discipleship.local / password
 
-### Google Sign In Setup
-
-1. **Create Google OAuth Credentials:**
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable Google+ API
-   - Go to "Credentials" → "Create Credentials" → "OAuth client ID"
-   - Choose "Web application"
-   - Add authorized redirect URI: `http://localhost:8000/auth/google/callback` (or your production URL)
-   - Copy the Client ID and Client Secret
-
-2. **Update `.env` file:**
-   ```env
-   GOOGLE_CLIENT_ID=your_client_id_here
-   GOOGLE_CLIENT_SECRET=your_client_secret_here
-   GOOGLE_REDIRECT_URI=http://localhost:8000/auth/google/callback
-   ```
-
-3. **Install Laravel Socialite:**
-   ```bash
-   composer require laravel/socialite
-   ```
-
-4. **Run migrations:**
-   ```bash
-   php artisan migrate
-   ```
-
-Users can now sign in with Google by clicking the "Sign in with Google" button on the login page.
-
 ### API Usage
 
 The system provides a complete REST API at `/api/v1/`. All API endpoints require authentication via Sanctum tokens.
@@ -245,9 +208,6 @@ curl -X GET http://localhost:8000/api/v1/dashboard/summary \
 - `MAIL_*`: SMTP configuration for email sending
 
 ### Optional
-- `GOOGLE_CLIENT_ID`: Google OAuth Client ID (for Google Sign In)
-- `GOOGLE_CLIENT_SECRET`: Google OAuth Client Secret
-- `GOOGLE_REDIRECT_URI`: Google OAuth redirect URI (default: `http://localhost:8000/auth/google/callback`)
 - `REDIS_*`: Redis configuration (for caching and queues)
 - `QUEUE_CONNECTION`: Queue driver (`database`, `redis`, `sqs`)
 
