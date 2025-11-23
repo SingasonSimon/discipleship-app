@@ -1,16 +1,8 @@
-*.log
-.DS_Store
-.env
-.env.backup
-.env.production
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
+# Laravel
+/.env
+/.env.backup
+/.env.production
+/.phpunit.result.cache
 /auth.json
 /node_modules
 /public/build
@@ -21,4 +13,213 @@
 /vendor
 Homestead.json
 Homestead.yaml
+
+# Laravel 12 specific
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/storage/app/*
+!/storage/app/.gitignore
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore
+
+# Build artifacts
+/public/build/*
+/public/mix-manifest.json
+/public/vite-manifest.json
+/public/.vite
+
+# IDE - PhpStorm / IntelliJ
+/.idea
+*.iml
+*.iws
+*.ipr
+.idea/
+
+# IDE - VS Code
+/.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IDE - Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# IDE - NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# IDE - Eclipse
+.project
+.classpath
+.settings/
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.recommenders
+
+# IDE - Fleet
+/.fleet
+.fleet/
+
+# IDE - Nova
+/.nova
+
+# IDE - Zed
+/.zed
+
+# OS - macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# OS - Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# OS - Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+/.phpunit.cache
+/phpunit.xml.bak
+.phpunit.result.cache
+/coverage
+/.phpunit.cache/
+
+# Composer
+/vendor/
+composer.phar
+composer.lock.backup
+
+# NPM / Yarn / PNPM
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+package-lock.json.backup
+yarn.lock.backup
+
+# Environment files
+.env
+.env.*
+!.env.example
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# Backup files
+*.backup
+*.bak
+*.swp
+*.swo
+*~
+*.orig
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+/temp/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+database.sqlite
+database.sqlite-journal
+
+# Cache
+.cache/
+*.cache
+
+# Misc
+.phpactor.json
+.php-cs-fixer.cache
+.php-cs-fixer.php.backup
+
+# Docker
+.dockerignore.backup
+
+# Security
+*.pem
+*.key
+*.crt
+*.cert
+secrets/
+
+# Documentation build
+/docs/_build/
+/site/
+
+# Laravel specific
+/storage/app/public/*
+!/storage/app/public/.gitignore
+/storage/framework/cache/data/*
+!/storage/framework/cache/data/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/logs/*
+!/storage/logs/.gitignore

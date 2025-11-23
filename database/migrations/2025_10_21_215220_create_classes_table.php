@@ -14,7 +14,7 @@ return new class () extends Migration {
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->foreignId('mentor_id')->constrained('users')->onDelete('set null');
+            $table->foreignId('mentor_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('schedule_rule')->comment('RRULE-like string for recurring schedule');
             $table->integer('capacity')->default(30);
             $table->integer('duration_weeks')->default(12);

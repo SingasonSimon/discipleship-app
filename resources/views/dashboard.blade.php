@@ -55,7 +55,8 @@
 
             <!-- Overview Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Total Members -->
+                <!-- Total Members - Only for Admin/Pastor/Mentor -->
+                @if(!$user->isMember())
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <div class="flex items-center">
@@ -77,6 +78,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- Active Classes -->
                 @can('viewAny', App\Models\DiscipleshipClass::class)
@@ -138,7 +140,11 @@
                             </div>
                             <div class="ml-4">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                    Total Sessions
+                                    @if($user->isMember())
+                                        My Sessions
+                                    @else
+                                        Total Sessions
+                                    @endif
                                 </dt>
                                 <dd class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                     {{ number_format($totalSessions) }}
@@ -161,7 +167,11 @@
                             </div>
                             <div class="ml-4">
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                    Attendance Rate
+                                    @if($user->isMember())
+                                        My Attendance Rate
+                                    @else
+                                        Attendance Rate
+                                    @endif
                                 </dt>
                                 <dd class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                     {{ $attendanceRate }}%
@@ -174,7 +184,8 @@
 
             <!-- Recent Activity & Today's Sessions -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Recent Activity -->
+                <!-- Recent Activity - Only for Admin/Pastor/Mentor -->
+                @if(!$user->isMember())
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
@@ -196,6 +207,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- Today's Sessions -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -340,8 +352,8 @@
             <!-- Member-specific Quick Actions -->
             @if($user->isMember())
                 @php
-                    $member = \App\Models\Member::where('user_id', $user->id)->first();
-                    $myEnrollments = $member ? $member->enrollments()->with('class')->where('status', 'approved')->count() : 0;
+                    $member = $member ?? \App\Models\Member::where('user_id', $user->id)->first();
+                    $myEnrollments = $member ? ($member->enrollments()->where('status', 'approved')->count()) : 0;
                     $pendingEnrollments = $member ? $member->enrollments()->where('status', 'pending')->count() : 0;
                 @endphp
                 
@@ -433,8 +445,8 @@
                 </div>
             </div>
 
-            <!-- Analytics Dashboard -->
-            @if(isset($analytics))
+            <!-- Analytics Dashboard - Only for Admin/Pastor/Mentor -->
+            @if(isset($analytics) && !empty($analytics) && !$user->isMember())
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-6">

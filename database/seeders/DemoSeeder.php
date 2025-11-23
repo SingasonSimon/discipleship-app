@@ -259,7 +259,6 @@ class DemoSeeder extends Seeder
                     'topic' => $this->getSessionTopic($class->title, $sessionNumber),
                     'notes' => $isPast ? fake()->optional(0.6)->paragraph() : null,
                     'location' => $class->location,
-                    'duration_minutes' => fake()->numberBetween(60, 120),
                     'created_by' => $class->mentor_id,
                 ]);
 
@@ -347,7 +346,7 @@ class DemoSeeder extends Seeder
                         'member_id' => $member->id,
                         'status' => $status,
                         'marked_by' => $class->mentor_id,
-                        'marked_at' => Carbon::parse($session->session_date . ' ' . fake()->time('H:i:s')),
+                        'marked_at' => Carbon::parse($session->session_date)->setTimeFromTimeString(fake()->time('H:i:s')),
                     ]);
                 }
             }

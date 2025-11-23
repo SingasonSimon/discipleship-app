@@ -58,7 +58,7 @@ The application supports four user roles with different permissions:
 
 - **admin**: Full access to all features
 - **pastor**: Can manage members, classes, and mentorships
-- **coordinator**: Can manage classes and view members
+- **mentor**: Can manage classes and track attendance
 - **member**: Basic access to view their own data
 
 ## API Endpoints
@@ -1261,7 +1261,8 @@ For testing purposes, use these demo credentials:
 
 - **Admin**: `admin@discipleship.local` / `password`
 - **Pastor**: `pastor@discipleship.local` / `password`
-- **Coordinator**: `coordinator@discipleship.local` / `password`
+- **Mentor**: `mentor@discipleship.local` / `password`
+- **Member**: `member@discipleship.local` / `password`
 
 ### Example cURL Commands
 

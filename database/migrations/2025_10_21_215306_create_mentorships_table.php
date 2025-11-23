@@ -12,8 +12,8 @@ return new class () extends Migration {
     {
         Schema::create('mentorships', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained('members')->onDelete('cascade')->index();
-            $table->foreignId('mentor_id')->constrained('users')->onDelete('cascade')->index();
+            $table->foreignId('member_id')->constrained('members')->onDelete('cascade');
+            $table->foreignId('mentor_id')->constrained('users')->onDelete('cascade');
             $table->date('start_date');
             $table->enum('status', ['active', 'paused', 'completed'])->default('active');
             $table->text('notes')->nullable();

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('additional_notes')->nullable();
             $table->json('attachments')->nullable()->comment('Array of file attachments or URLs');
             $table->boolean('is_published')->default(false)->comment('Whether content is visible to enrolled members');
-            $table->foreignId('created_by')->constrained('users')->onDelete('set null');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
 
             // Indexes for performance

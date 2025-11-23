@@ -46,6 +46,22 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Get daily Bible verse
+        $bibleVerseService = new BibleVerseService();
+        $dailyVerse = $bibleVerseService->getDailyVerse();
+
+        // Base data for all users
+        $baseData = [
+            'user' => $user,
+            'dailyVerse' => $dailyVerse,
+        ];
+
+        // If user is a member, only show member-specific data
+        if ($user->isMember()) {
+            return $this->getMemberDashboardData($user, $baseData);
+        }
+
+        // For admin, pastor, and mentor - show system-wide statistics
         // Base statistics
         $totalMembers = Member::count();
         $totalClasses = DiscipleshipClass::count();
@@ -79,11 +95,7 @@ class DashboardController extends Controller
         // Role-specific data
         $roleSpecificData = $this->getRoleSpecificData($user);
 
-        // Get daily Bible verse
-        $bibleVerseService = new BibleVerseService();
-        $dailyVerse = $bibleVerseService->getDailyVerse();
-
-        return [
+        return array_merge($baseData, [
             'totalMembers' => $totalMembers,
             'totalClasses' => $totalClasses,
             'totalSessions' => $totalSessions,
@@ -95,9 +107,84 @@ class DashboardController extends Controller
             'activeMentorships' => $activeMentorships,
             'attendanceRate' => $attendanceRate,
             'recentMessages' => $recentMessages,
-            'user' => $user,
-            'dailyVerse' => $dailyVerse,
-        ] + $roleSpecificData;
+        ], $roleSpecificData);
+    }
+
+    /**
+     * Get member-specific dashboard data
+     */
+    private function getMemberDashboardData(User $user, array $baseData): array
+    {
+        $member = Member::where('user_id', $user->id)->first();
+
+        if (!$member) {
+            return array_merge($baseData, [
+                'totalMembers' => 0,
+                'totalClasses' => 0,
+                'totalSessions' => 0,
+                'totalAttendance' => 0,
+                'recentMembers' => 0,
+                'recentSessions' => 0,
+                'todaySessions' => 0,
+                'todayAttendance' => 0,
+                'activeMentorships' => 0,
+                'attendanceRate' => 0,
+                'recentMessages' => collect(),
+            ]);
+        }
+
+        // Member's own statistics
+        $myEnrollments = $member->enrollments()->where('status', 'approved')->count();
+        
+        // Get class IDs from approved enrollments
+        $myClassIds = $member->enrollments()
+            ->where('status', 'approved')
+            ->pluck('class_id')
+            ->filter()
+            ->unique();
+        
+        // Get sessions for member's enrolled classes
+        $mySessions = $myClassIds->isNotEmpty() 
+            ? ClassSession::whereIn('class_id', $myClassIds)->count() 
+            : 0;
+        
+        // Member's attendance
+        $myAttendance = Attendance::where('member_id', $member->id)->count();
+        
+        // Calculate attendance rate based on sessions in enrolled classes
+        $myAttendanceRate = $mySessions > 0 ? round(($myAttendance / $mySessions) * 100, 2) : 0;
+
+        // Today's sessions for member's classes
+        $todaySessions = $myClassIds->isNotEmpty()
+            ? ClassSession::whereIn('class_id', $myClassIds)
+                ->where('session_date', Carbon::today())
+                ->count()
+            : 0;
+            
+        $todayAttendance = Attendance::where('member_id', $member->id)
+            ->whereHas('classSession', function ($query) {
+                $query->where('session_date', Carbon::today());
+            })
+            ->count();
+
+        // Member's mentorships
+        $myMentorships = $member->mentorships()->where('status', 'active')->count();
+
+        return array_merge($baseData, [
+            'totalMembers' => 0, // Not shown to members
+            'totalClasses' => $myClassIds->count(),
+            'totalSessions' => $mySessions,
+            'totalAttendance' => $myAttendance,
+            'recentMembers' => 0, // Not shown to members
+            'recentSessions' => 0, // Not shown to members
+            'todaySessions' => $todaySessions,
+            'todayAttendance' => $todayAttendance,
+            'activeMentorships' => $myMentorships,
+            'attendanceRate' => $myAttendanceRate,
+            'recentMessages' => collect(),
+            'member' => $member,
+            'myEnrollments' => $myEnrollments,
+        ]);
     }
 
     /**
@@ -206,6 +293,13 @@ class DashboardController extends Controller
      */
     private function getAnalyticsData(): array
     {
+        $user = auth()->user();
+
+        // Members should not see system-wide analytics
+        if ($user->isMember()) {
+            return [];
+        }
+
         $attendanceTrends = $this->reportService->getAttendanceTrends(
             Carbon::now()->subMonths(config('analytics.dashboard_attendance_trends_months', 3)),
             Carbon::now()
