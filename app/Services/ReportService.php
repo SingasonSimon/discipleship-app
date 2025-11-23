@@ -35,14 +35,17 @@ class ReportService
                 ];
             });
 
+        $totalDays = $startDate->diffInDays($endDate) + 1; // +1 to include both start and end dates
+        $totalAttendance = $trends->sum('count');
+        
         return [
             'period' => [
                 'start' => $startDate->format('Y-m-d'),
                 'end' => $endDate->format('Y-m-d'),
             ],
             'trends' => $trends,
-            'total_attendance' => $trends->sum('count'),
-            'average_per_day' => $trends->count() > 0 ? round($trends->sum('count') / $trends->count(), 2) : 0,
+            'total_attendance' => $totalAttendance,
+            'average_per_day' => $totalDays > 0 ? round($totalAttendance / $totalDays, 2) : 0,
         ];
     }
 
@@ -56,8 +59,15 @@ class ReportService
         $membersInClasses = Member::whereHas('enrollments')->distinct()->count();
         $membersInMentorships = Member::whereHas('mentorships')->distinct()->count();
 
+        // Calculate engagement rate as percentage of members with at least one form of engagement
+        $engagedMembers = Member::where(function ($query) {
+            $query->whereHas('attendance')
+                ->orWhereHas('enrollments')
+                ->orWhereHas('mentorships');
+        })->distinct()->count();
+
         $engagementRate = $totalMembers > 0
-            ? round((($membersWithAttendance + $membersInClasses + $membersInMentorships) / ($totalMembers * 3)) * 100, 2)
+            ? round(($engagedMembers / $totalMembers) * 100, 2)
             : 0;
 
         $topEngagedMembers = Member::withCount(['attendance', 'enrollments', 'mentorships'])

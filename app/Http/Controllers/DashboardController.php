@@ -366,8 +366,8 @@ class DashboardController extends Controller
 
                 return [
                     'title' => $class->title,
-                    'sessions' => $class->sessions_count,
-                    'enrollments' => $class->enrollments_count,
+                    'sessions_count' => $class->sessions_count,
+                    'enrollments_count' => $class->enrollments_count,
                     'attendance_rate' => $attendanceRate,
                 ];
             })
