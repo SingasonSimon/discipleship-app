@@ -175,7 +175,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
+            @endif
 
             <!-- Recent Activity & Today's Sessions - Only for Admin and Pastor, not Mentors -->
             @if($user->isAdmin() || $user->isPastor())
