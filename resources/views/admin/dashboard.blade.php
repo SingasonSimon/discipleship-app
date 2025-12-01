@@ -64,7 +64,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <a href="{{ route('admin.users', ['email_verified' => 'unverified']) }}" class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg hover:shadow-md transition-shadow cursor-pointer">
                     <div class="p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <!-- Recent Activity -->

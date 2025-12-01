@@ -135,6 +135,43 @@ class AdminController extends Controller
     }
 
     /**
+     * Manually verify a user's email
+     */
+    public function verifyUser(User $user)
+    {
+        if ($user->email_verified_at) {
+            return redirect()
+                ->route('admin.users')
+                ->with('error', 'User email is already verified.');
+        }
+
+        $user->forceFill(['email_verified_at' => now()])->save();
+
+        return redirect()
+            ->route('admin.users')
+            ->with('success', "Email for {$user->name} has been verified successfully.");
+    }
+
+    /**
+     * Resend verification email to user
+     */
+    public function resendVerification(User $user)
+    {
+        if ($user->email_verified_at) {
+            return redirect()
+                ->route('admin.users')
+                ->with('error', 'User email is already verified.');
+        }
+
+        // Send verification notification
+        $user->sendEmailVerificationNotification();
+
+        return redirect()
+            ->route('admin.users')
+            ->with('success', "Verification email has been sent to {$user->email}.");
+    }
+
+    /**
      * Get system statistics
      */
     private function getSystemStats(): array

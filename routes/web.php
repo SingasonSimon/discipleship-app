@@ -98,6 +98,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
         Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
         Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show');
+        Route::post('/users/{user}/verify', [AdminController::class, 'verifyUser'])->name('users.verify');
+        Route::post('/users/{user}/resend-verification', [AdminController::class, 'resendVerification'])->name('users.resend-verification');
     });
 });
 

@@ -1,5 +1,6 @@
 import './bootstrap';
 import './theme';
+import './notifications';
 
 import Alpine from 'alpinejs';
 import { initDashboardCharts } from './charts';

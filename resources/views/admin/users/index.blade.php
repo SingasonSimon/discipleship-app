@@ -17,25 +17,23 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
+            @if(session('new_user_credentials'))
                 <div class="mb-6">
-                    <div class="rounded-md bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 p-4">
+                    <div class="rounded-md bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4">
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 10-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm font-medium text-green-800 dark:text-green-200">
-                                    {{ session('success') }}
+                                <p class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                                    New User Credentials:
                                 </p>
-                                @if(session('new_user_credentials'))
-                                    <div class="mt-2 text-xs text-green-700 dark:text-green-300 space-y-1">
-                                        <p><span class="font-semibold">Email:</span> {{ session('new_user_credentials.email') }}</p>
-                                        <p><span class="font-semibold">Password:</span> {{ session('new_user_credentials.password') }}</p>
-                                    </div>
-                                @endif
+                                <div class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                                    <p><span class="font-semibold">Email:</span> {{ session('new_user_credentials.email') }}</p>
+                                    <p><span class="font-semibold">Password:</span> {{ session('new_user_credentials.password') }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -158,9 +156,29 @@
                                             {{ $user->created_at->format('M j, Y') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('admin.users.show', $user) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                                                View Details
-                                            </a>
+                                            <div class="flex items-center space-x-3">
+                                                <a href="{{ route('admin.users.show', $user) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                                                    View Details
+                                                </a>
+                                                @if(!$user->email_verified_at)
+                                                    <form action="{{ route('admin.users.verify', $user) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300" title="Verify Email">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('admin.users.resend-verification', $user) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" title="Resend Verification Email">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

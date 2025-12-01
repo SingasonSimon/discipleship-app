@@ -42,5 +42,11 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <!-- Flash Messages Handler -->
+        <x-flash-messages />
+
+        <!-- Notification Container (will be created by JS if not exists) -->
+        <div id="notification-container" class="fixed top-4 right-4 z-50 space-y-3 max-w-md w-full pointer-events-none"></div>
     </body>
 </html>

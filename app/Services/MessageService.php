@@ -141,6 +141,7 @@ class MessageService
 
     /**
      * Get actual recipients based on message recipient types
+     * Includes members with email addresses (either via user account or direct email)
      */
     protected function getRecipients(array $recipientTypes, Message $message): \Illuminate\Support\Collection
     {
@@ -149,33 +150,48 @@ class MessageService
         foreach ($recipientTypes as $type) {
             switch ($type) {
                 case 'all_members':
+                    // Get all members who have an email (either via user account or direct email field)
                     $recipients = $recipients->merge(
-                        Member::whereHas('user')->with('user')->get()
+                        Member::where(function ($query) {
+                            $query->whereHas('user')
+                                ->orWhereNotNull('email')
+                                ->where('email', '!=', '');
+                        })
+                        ->with('user')
+                        ->get()
                     );
                     break;
 
                 case 'class_members':
-                    // Get members from all active classes
+                    // Get members from all active classes who have email
                     $classIds = DiscipleshipClass::where('is_active', true)->pluck('id');
                     $recipients = $recipients->merge(
                         Member::whereHas('enrollments', function ($query) use ($classIds) {
                             $query->whereIn('class_id', $classIds)
                                 ->where('status', 'approved');
                         })
-                        ->whereHas('user')
+                        ->where(function ($query) {
+                            $query->whereHas('user')
+                                ->orWhereNotNull('email')
+                                ->where('email', '!=', '');
+                        })
                         ->with('user')
                         ->get()
                     );
                     break;
 
                 case 'mentorship_pairs':
-                    // Get members in active mentorships
+                    // Get members in active mentorships who have email
                     $memberIds = Mentorship::where('status', 'active')
                         ->pluck('member_id')
                         ->unique();
                     $recipients = $recipients->merge(
                         Member::whereIn('id', $memberIds)
-                            ->whereHas('user')
+                            ->where(function ($query) {
+                                $query->whereHas('user')
+                                    ->orWhereNotNull('email')
+                                    ->where('email', '!=', '');
+                            })
                             ->with('user')
                             ->get()
                     );
