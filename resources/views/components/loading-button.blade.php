@@ -9,17 +9,15 @@
             if (this.$el.type === 'submit') {
                 const form = this.$el.closest('form');
                 if (form) {
-                    form.addEventListener('submit', () => {
-                        this.loading = true;
+                    // Set loading when form submits - use arrow function to preserve 'this'
+                    form.addEventListener('submit', (e) => {
+                        // Only show loading if form is valid (will submit)
+                        if (form.checkValidity()) {
+                            this.loading = true;
+                        }
                     });
                 }
             }
-        }
-    }"
-    @click="if ($el.type === 'submit' && !loading && !{{ $disabled ? 'true' : 'false' }}) { 
-        const form = $el.closest('form');
-        if (form && form.checkValidity()) {
-            loading = true;
         }
     }"
     :disabled="loading || {{ $disabled ? 'true' : 'false' }}"
