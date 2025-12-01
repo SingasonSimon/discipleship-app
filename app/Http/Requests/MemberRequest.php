@@ -23,6 +23,10 @@ class MemberRequest extends FormRequest
     public function rules(): array
     {
         $memberId = $this->route('member')?->id;
+        $member = $this->route('member');
+        
+        // Get the user_id to ignore when checking users table uniqueness
+        $userIdToIgnore = $member?->user_id;
 
         return [
             'full_name' => ['required', 'string', 'max:255'],
@@ -37,7 +41,7 @@ class MemberRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique('members', 'email')->ignore($memberId),
-                Rule::unique('users', 'email'),
+                Rule::unique('users', 'email')->ignore($userIdToIgnore),
             ],
             'date_of_conversion' => ['required', 'date', 'before_or_equal:today'],
             'preferred_contact' => ['required', 'in:email,call'],

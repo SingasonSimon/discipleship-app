@@ -103,9 +103,9 @@
                             <a href="{{ route('members.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <x-loading-button type="submit" class="bg-blue-500 hover:bg-blue-700">
                                 Add Member
-                            </button>
+                            </x-loading-button>
                         </div>
                     </form>
                 </div>
