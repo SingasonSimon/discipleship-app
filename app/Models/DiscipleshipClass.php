@@ -25,6 +25,7 @@ class DiscipleshipClass extends Model
         'title',
         'description',
         'mentor_id',
+        'created_by',
         'schedule_type',
         'schedule_day',
         'schedule_time',
@@ -56,6 +57,14 @@ class DiscipleshipClass extends Model
     public function mentor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'mentor_id');
+    }
+
+    /**
+     * Get the user who created this class
+     */
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
