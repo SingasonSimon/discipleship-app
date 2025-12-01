@@ -30,12 +30,6 @@ return new class extends Migration
                 'phone' => env('DEFAULT_PASTOR_PHONE', null),
             ],
             [
-                'email' => env('DEFAULT_PASTOR2_EMAIL', 'pastor2@discipleship.local'),
-                'name' => env('DEFAULT_PASTOR2_NAME', 'Pastor Mary Johnson'),
-                'role' => 'pastor',
-                'phone' => env('DEFAULT_PASTOR2_PHONE', null),
-            ],
-            [
                 'email' => env('DEFAULT_MENTOR_EMAIL', 'mentor@discipleship.local'),
                 'name' => env('DEFAULT_MENTOR_NAME', 'Mentor Grace'),
                 'role' => 'mentor',
@@ -100,7 +94,6 @@ return new class extends Migration
         $emails = [
             env('DEFAULT_ADMIN_EMAIL', 'admin@discipleship.local'),
             env('DEFAULT_PASTOR_EMAIL', 'pastor@discipleship.local'),
-            env('DEFAULT_PASTOR2_EMAIL', 'pastor2@discipleship.local'),
             env('DEFAULT_MENTOR_EMAIL', 'mentor@discipleship.local'),
             env('DEFAULT_MEMBER_EMAIL', 'member@discipleship.local'),
         ];

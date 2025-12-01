@@ -16,7 +16,7 @@ class MentorshipController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             if (! $request->user()->hasAnyRole(['admin', 'pastor', 'mentor'])) {
-                abort(403, 'Access denied. Only admins, pastors, or mentors can manage mentorships.');
+                abort(403, 'Access denied. Only admins, pastors, or mentors can view mentorships.');
             }
             return $next($request);
         });
@@ -67,7 +67,8 @@ class MentorshipController extends Controller
                             ->withQueryString();
 
         // Get mentors for filter dropdown
-        $mentors = User::whereIn('role', ['admin', 'pastor', 'mentor'])
+        // Only users with 'mentor' role can be mentors (not pastors or admins)
+        $mentors = User::where('role', 'mentor')
                       ->orderBy('name')
                       ->get();
 
@@ -79,11 +80,17 @@ class MentorshipController extends Controller
      */
     public function create(): View
     {
+        // Only admins and mentors can create mentorships, not pastors
+        if (auth()->user()->isPastor()) {
+            abort(403, 'Access denied. Pastors can only view mentorships.');
+        }
+
         $members = Member::whereDoesntHave('mentorships', function ($query) {
             $query->where('status', 'active');
         })->orderBy('full_name')->get();
 
-        $mentors = User::whereIn('role', ['admin', 'pastor', 'mentor'])
+        // Only users with 'mentor' role can be mentors (not pastors or admins)
+        $mentors = User::where('role', 'mentor')
                       ->orderBy('name')
                       ->get();
 
@@ -95,6 +102,11 @@ class MentorshipController extends Controller
      */
     public function store(MentorshipRequest $request)
     {
+        // Only admins and mentors can create mentorships, not pastors
+        if (auth()->user()->isPastor()) {
+            abort(403, 'Access denied. Pastors can only view mentorships.');
+        }
+
         $mentorship = Mentorship::create($request->validated());
 
         return redirect()
@@ -110,8 +122,9 @@ class MentorshipController extends Controller
         $mentorship->load(['member', 'mentor']);
 
         // Get mentorship statistics
+        $endDate = $mentorship->end_date ?? now();
         $stats = [
-            'duration_days' => $mentorship->start_date->diffInDays(now()),
+            'duration_days' => (int) $mentorship->start_date->diffInDays($endDate), // Ensure whole number
             'meetings_held' => 0, // This would be calculated from meeting records
             'last_meeting' => null, // This would come from meeting records
         ];
@@ -124,8 +137,14 @@ class MentorshipController extends Controller
      */
     public function edit(Mentorship $mentorship): View
     {
+        // Only admins and mentors can edit mentorships, not pastors
+        if (auth()->user()->isPastor()) {
+            abort(403, 'Access denied. Pastors can only view mentorships.');
+        }
+
         $members = Member::orderBy('full_name')->get();
-        $mentors = User::whereIn('role', ['admin', 'pastor', 'mentor'])
+        // Only users with 'mentor' role can be mentors (not pastors or admins)
+        $mentors = User::where('role', 'mentor')
                       ->orderBy('name')
                       ->get();
 
@@ -137,6 +156,11 @@ class MentorshipController extends Controller
      */
     public function update(MentorshipRequest $request, Mentorship $mentorship)
     {
+        // Only admins and mentors can update mentorships, not pastors
+        if (auth()->user()->isPastor()) {
+            abort(403, 'Access denied. Pastors can only view mentorships.');
+        }
+
         $mentorship->update($request->validated());
 
         return redirect()
@@ -149,6 +173,11 @@ class MentorshipController extends Controller
      */
     public function destroy(Mentorship $mentorship)
     {
+        // Only admins and mentors can delete mentorships, not pastors
+        if (auth()->user()->isPastor()) {
+            abort(403, 'Access denied. Pastors can only view mentorships.');
+        }
+
         $mentorship->delete();
 
         return redirect()
@@ -187,6 +216,11 @@ class MentorshipController extends Controller
      */
     public function updateStatus(Request $request, Mentorship $mentorship)
     {
+        // Only admins and mentors can update mentorship status, not pastors
+        if (auth()->user()->isPastor()) {
+            abort(403, 'Access denied. Pastors can only view mentorships.');
+        }
+
         $request->validate([
             'status' => ['required', 'in:active,completed,paused'],
         ]);
@@ -213,8 +247,8 @@ class MentorshipController extends Controller
             'paused_mentorships' => Mentorship::where('status', 'paused')->count(),
         ];
 
-        // Get mentors with most mentees
-        $topMentors = User::whereIn('role', ['admin', 'pastor', 'mentor'])
+        // Get mentors with most mentees (only users with 'mentor' role)
+        $topMentors = User::where('role', 'mentor')
             ->withCount(['mentorships' => function ($query) {
                 $query->where('status', 'active');
             }])

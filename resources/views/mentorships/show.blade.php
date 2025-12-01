@@ -5,9 +5,11 @@
                 {{ __('Mentorship Details') }}
             </h2>
             <div class="space-x-2">
-                <a href="{{ route('mentorships.edit', $mentorship) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                    Edit
-                </a>
+                @if(!auth()->user()->isPastor())
+                    <a href="{{ route('mentorships.edit', $mentorship) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                        Edit
+                    </a>
+                @endif
                 <a href="{{ route('mentorships.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     Back to Mentorships
                 </a>
@@ -142,50 +144,52 @@
             </div>
 
             <!-- Actions -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Actions</h3>
-                    <div class="flex flex-wrap gap-3">
-                        <!-- Status Update -->
-                        @if($mentorship->status === 'active')
-                            <form method="POST" action="{{ route('mentorships.updateStatus', $mentorship) }}" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="paused">
-                                <button type="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                                    Pause Mentorship
-                                </button>
-                            </form>
-                            <form method="POST" action="{{ route('mentorships.updateStatus', $mentorship) }}" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="completed">
-                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                    Complete Mentorship
-                                </button>
-                            </form>
-                        @elseif($mentorship->status === 'paused')
-                            <form method="POST" action="{{ route('mentorships.updateStatus', $mentorship) }}" class="inline">
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="active">
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    Resume Mentorship
-                                </button>
-                            </form>
-                        @endif
+            @if(!auth()->user()->isPastor())
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Actions</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <!-- Status Update -->
+                            @if($mentorship->status === 'active')
+                                <form method="POST" action="{{ route('mentorships.updateStatus', $mentorship) }}" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="paused">
+                                    <button type="submit" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                                        Pause Mentorship
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('mentorships.updateStatus', $mentorship) }}" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="completed">
+                                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                        Complete Mentorship
+                                    </button>
+                                </form>
+                            @elseif($mentorship->status === 'paused')
+                                <form method="POST" action="{{ route('mentorships.updateStatus', $mentorship) }}" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="active">
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Resume Mentorship
+                                    </button>
+                                </form>
+                            @endif
 
-                        <!-- Delete -->
-                        <form method="POST" action="{{ route('mentorships.destroy', $mentorship) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this mentorship? This action cannot be undone.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                Delete Mentorship
-                            </button>
-                        </form>
+                            <!-- Delete -->
+                            <form method="POST" action="{{ route('mentorships.destroy', $mentorship) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this mentorship? This action cannot be undone.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Delete Mentorship
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

@@ -200,8 +200,8 @@ class MentorshipController extends Controller
             'paused_mentorships' => Mentorship::where('status', 'paused')->count(),
         ];
 
-        // Get mentors with most mentees
-        $topMentors = User::whereIn('role', ['admin', 'pastor', 'mentor'])
+        // Get mentors with most mentees (only users with 'mentor' role)
+        $topMentors = User::where('role', 'mentor')
             ->withCount(['mentorships' => function ($query) {
                 $query->where('status', 'active');
             }])
@@ -230,7 +230,8 @@ class MentorshipController extends Controller
      */
     public function mentors()
     {
-        $mentors = User::whereIn('role', ['admin', 'pastor', 'mentor'])
+        // Only users with 'mentor' role can be mentors (not pastors or admins)
+        $mentors = User::where('role', 'mentor')
                       ->orderBy('name')
                       ->get(['id', 'name', 'role']);
 

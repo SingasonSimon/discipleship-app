@@ -24,6 +24,13 @@ class ClassController extends Controller
         // All authenticated users can view classes list (members can browse, mentors can manage)
         $query = DiscipleshipClass::with(['mentor', 'sessions']);
 
+        // Role-based filtering: Pastors and mentors should only see their own classes
+        $user = auth()->user();
+        if ($user->isPastor() || $user->isMentor()) {
+            $query->where('mentor_id', $user->id);
+        }
+        // Admins can see all classes (no filter)
+
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->get('search');
@@ -36,8 +43,8 @@ class ClassController extends Controller
             });
         }
 
-        // Filter by mentor
-        if ($request->filled('mentor_id')) {
+        // Filter by mentor (only for admins, as pastors/mentors already filtered)
+        if ($user->isAdmin() && $request->filled('mentor_id')) {
             $query->where('mentor_id', $request->get('mentor_id'));
         }
 

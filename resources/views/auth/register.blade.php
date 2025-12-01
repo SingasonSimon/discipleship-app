@@ -23,16 +23,6 @@
             <x-input-error :messages="$errors->get('phone')" class="mt-2" />
         </div>
 
-        <!-- Role -->
-        <div class="mt-4">
-            <x-input-label for="role" :value="__('Role')" />
-            <select id="role" name="role" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
-                <option value="member" {{ old('role', 'member') === 'member' ? 'selected' : '' }}>Member</option>
-            </select>
-            <x-input-error :messages="$errors->get('role')" class="mt-2" />
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Select 'Member' for regular registration. Pastors and Admins are assigned by church leadership.</p>
-        </div>
-
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />

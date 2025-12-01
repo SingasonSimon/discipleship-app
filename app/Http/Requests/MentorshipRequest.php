@@ -36,7 +36,7 @@ class MentorshipRequest extends FormRequest
                 'required',
                 'exists:users,id',
                 Rule::exists('users', 'id')->where(function ($query) {
-                    $query->whereIn('role', ['admin', 'pastor', 'mentor']);
+                    $query->where('role', 'mentor'); // Only users with 'mentor' role can be mentors
                 }),
             ],
             'start_date' => ['required', 'date', 'before_or_equal:today'],
@@ -54,7 +54,7 @@ class MentorshipRequest extends FormRequest
     {
         return [
             'member_id.unique' => 'This member already has an active mentorship relationship.',
-            'mentor_id.exists' => 'The selected mentor must be an admin, pastor, or mentor.',
+            'mentor_id.exists' => 'The selected mentor must have the mentor role.',
             'start_date.before_or_equal' => 'Start date cannot be in the future.',
             'end_date.after' => 'End date must be after the start date.',
             'status.in' => 'Status must be active, completed, or paused.',

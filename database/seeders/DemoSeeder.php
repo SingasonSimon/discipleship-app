@@ -34,21 +34,11 @@ class DemoSeeder extends Seeder
             ]
         );
 
-        // Create pastor users (use firstOrCreate to avoid duplicates)
+        // Create pastor user (use firstOrCreate to avoid duplicates)
         $pastor1 = User::firstOrCreate(
             ['email' => env('DEFAULT_PASTOR_EMAIL', 'pastor@discipleship.local')],
             [
                 'name' => env('DEFAULT_PASTOR_NAME', 'Pastor John Smith'),
-                'role' => User::ROLE_PASTOR,
-                'email_verified_at' => now(),
-                'password' => Hash::make($defaultPassword),
-            ]
-        );
-
-        $pastor2 = User::firstOrCreate(
-            ['email' => env('DEFAULT_PASTOR2_EMAIL', 'pastor2@discipleship.local')],
-            [
-                'name' => env('DEFAULT_PASTOR2_NAME', 'Pastor Mary Johnson'),
                 'role' => User::ROLE_PASTOR,
                 'email_verified_at' => now(),
                 'password' => Hash::make($defaultPassword),
@@ -69,7 +59,18 @@ class DemoSeeder extends Seeder
                 'email' => fake()->optional(0.8)->safeEmail(),
                 'date_of_conversion' => fake()->dateTimeBetween('-3 months', '-1 month')->format('Y-m-d'),
                 'preferred_contact' => fake()->randomElement(['sms', 'email', 'call']),
-                'notes' => fake()->optional(0.7)->paragraph(),
+                'notes' => fake()->optional(0.7)->randomElement([
+                    'New member, needs follow-up',
+                    'Active in church activities',
+                    'Interested in discipleship program',
+                    'Regular attendee, committed member',
+                    'Needs prayer support',
+                    'Recently converted, enthusiastic',
+                    'Looking for mentorship opportunity',
+                    'Engaged in Bible study',
+                    'Serving in ministry',
+                    'Growing in faith',
+                ]),
             ]);
             $members->push($member);
         }
@@ -82,7 +83,18 @@ class DemoSeeder extends Seeder
                 'email' => fake()->optional(0.8)->safeEmail(),
                 'date_of_conversion' => fake()->dateTimeBetween('-2 years', '-6 months')->format('Y-m-d'),
                 'preferred_contact' => fake()->randomElement(['sms', 'email', 'call']),
-                'notes' => fake()->optional(0.7)->paragraph(),
+                'notes' => fake()->optional(0.7)->randomElement([
+                    'New member, needs follow-up',
+                    'Active in church activities',
+                    'Interested in discipleship program',
+                    'Regular attendee, committed member',
+                    'Needs prayer support',
+                    'Recently converted, enthusiastic',
+                    'Looking for mentorship opportunity',
+                    'Engaged in Bible study',
+                    'Serving in ministry',
+                    'Growing in faith',
+                ]),
             ]);
             $members->push($member);
         }
@@ -95,7 +107,18 @@ class DemoSeeder extends Seeder
                 'email' => fake()->optional(0.8)->safeEmail(),
                 'date_of_conversion' => fake()->dateTimeBetween('-5 years', '-2 years')->format('Y-m-d'),
                 'preferred_contact' => fake()->randomElement(['sms', 'email', 'call']),
-                'notes' => fake()->optional(0.7)->paragraph(),
+                'notes' => fake()->optional(0.7)->randomElement([
+                    'New member, needs follow-up',
+                    'Active in church activities',
+                    'Interested in discipleship program',
+                    'Regular attendee, committed member',
+                    'Needs prayer support',
+                    'Recently converted, enthusiastic',
+                    'Looking for mentorship opportunity',
+                    'Engaged in Bible study',
+                    'Serving in ministry',
+                    'Growing in faith',
+                ]),
             ]);
             $members->push($member);
         }
@@ -126,7 +149,7 @@ class DemoSeeder extends Seeder
         $biblicalFoundations = DiscipleshipClass::create([
             'title' => 'Biblical Foundations',
             'description' => 'Deep dive into essential biblical teachings including creation, sin, redemption, and the character of God.',
-            'mentor_id' => $pastor2->id,
+            'mentor_id' => $pastor1->id,
             'schedule_type' => 'weekly',
             'schedule_day' => 'wednesday',
             'schedule_time' => '19:00',
@@ -160,7 +183,7 @@ class DemoSeeder extends Seeder
         $prayerFasting = DiscipleshipClass::create([
             'title' => 'Prayer and Fasting',
             'description' => 'Understanding the power of prayer and fasting in the Christian life. Practical guidance on developing a deeper prayer life.',
-            'mentor_id' => $pastor2->id,
+            'mentor_id' => $pastor1->id,
             'schedule_type' => 'biweekly',
             'schedule_day' => 'saturday',
             'schedule_time' => '09:00',
@@ -189,13 +212,22 @@ class DemoSeeder extends Seeder
 
         $this->command->info('Creating mentorship relationships...');
 
-        // Create mentorship relationships
-        $this->createMentorships($members, [$pastor1, $pastor2]);
+        // Get mentor user (only users with 'mentor' role can be mentors)
+        $mentorUser = User::where('role', User::ROLE_MENTOR)->first();
+        
+        if ($mentorUser) {
+            // Create mentorship relationships (only using actual mentors, not pastors)
+            $this->createMentorships($members, [$mentorUser]);
+        } else {
+            $this->command->warn('No mentor user found. Skipping mentorship creation.');
+        }
 
         $this->command->info('Demo data created successfully!');
         $this->command->info('Login credentials:');
         $this->command->info('Admin: admin@discipleship.local / password');
         $this->command->info('Pastor: pastor@discipleship.local / password');
+        $this->command->info('Mentor: mentor@discipleship.local / password');
+        $this->command->info('Member: member@discipleship.local / password');
     }
 
     /**
@@ -257,7 +289,15 @@ class DemoSeeder extends Seeder
                     'class_id' => $class->id,
                     'session_date' => $date->toDateString(),
                     'topic' => $this->getSessionTopic($class->title, $sessionNumber),
-                    'notes' => $isPast ? fake()->optional(0.6)->paragraph() : null,
+                    'notes' => $isPast ? fake()->optional(0.6)->randomElement([
+                        'Great discussion on the topic',
+                        'Members engaged well',
+                        'Good attendance and participation',
+                        'Covered key points effectively',
+                        'Questions answered satisfactorily',
+                        'Session went smoothly',
+                        'Members showed good understanding',
+                    ]) : null,
                     'location' => $class->location,
                     'created_by' => $class->mentor_id,
                 ]);
@@ -379,7 +419,16 @@ class DemoSeeder extends Seeder
                     'end_date' => $status === 'completed' ? fake()->dateTimeBetween($startDate, 'now')->format('Y-m-d') : null,
                     'status' => $status,
                     'meeting_frequency' => fake()->randomElement(['weekly', 'biweekly', 'monthly']),
-                    'notes' => fake()->optional(0.8)->paragraph(),
+                    'notes' => fake()->optional(0.8)->randomElement([
+                        'Regular mentorship meetings scheduled',
+                        'Member showing good progress',
+                        'Focusing on spiritual growth',
+                        'Building strong relationship',
+                        'Addressing specific spiritual needs',
+                        'Encouraging member in faith journey',
+                        'Providing guidance and support',
+                        'Member responding well to mentorship',
+                    ]),
                     'completed_at' => $status === 'completed' ? fake()->dateTimeBetween($startDate, 'now') : null,
                 ]);
             }

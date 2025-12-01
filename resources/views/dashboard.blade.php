@@ -259,7 +259,7 @@
                             </div>
                             <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                                 <div class="text-2xl font-bold text-purple-600">{{ $userStats['member'] ?? 0 }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">Members</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">Total Members</div>
                             </div>
                         </div>
 

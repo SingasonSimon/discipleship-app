@@ -235,7 +235,7 @@ class DashboardController extends Controller
                 'admin' => $userStats['admin'] ?? 0,
                 'pastor' => $userStats['pastor'] ?? 0,
                 'mentor' => $userStats['mentor'] ?? 0,
-                'member' => $userStats['member'] ?? 0,
+                'member' => Member::count(), // Show actual members count, not user accounts with member role
             ],
         ];
     }
