@@ -313,7 +313,73 @@
                     </div>
                 </div>
             @elseif($user->isPastor() || $user->isMentor())
-                <!-- My Classes/Members -->
+                <!-- My Ministry Overview - Enhanced for Pastors -->
+                @if($user->isPastor())
+                <div class="bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 dark:from-indigo-900/30 dark:via-blue-900/30 dark:to-purple-900/30 border border-indigo-200 dark:border-indigo-700 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                My Ministry Overview
+                            </h3>
+                            <div class="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            @can('viewAny', App\Models\DiscipleshipClass::class)
+                            <a href="{{ route('classes.index') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer border-2 border-transparent hover:border-indigo-400">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{{ $myClasses ?? 0 }}</div>
+                                <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">My Classes</div>
+                            </a>
+                            @else
+                            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-2 border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{{ $myClasses ?? 0 }}</div>
+                                <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">My Classes</div>
+                            </div>
+                            @endcan
+                            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-2 border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 9l6-6m0 0v6m0-6h-6"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{{ $mySessions ?? 0 }}</div>
+                                <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">My Sessions</div>
+                            </div>
+                            <a href="{{ route('members.index') }}" class="group bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer border-2 border-transparent hover:border-indigo-400">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center group-hover:bg-purple-600 transition-colors">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">{{ $myMembers ?? 0 }}</div>
+                                <div class="text-sm font-semibold text-gray-700 dark:text-gray-300">My Members</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @else
+                <!-- My Classes/Members - For Mentors -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
@@ -342,6 +408,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             @endif
 
             <!-- Member-specific Quick Actions -->
