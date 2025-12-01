@@ -136,9 +136,16 @@
                                             {{ is_array($message->payload['recipients'] ?? null) ? count($message->payload['recipients']) : 0 }} recipients
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('messages.show', $message) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</a>
-                                            <span class="mx-2">|</span>
-                                            <a href="{{ route('messages.edit', $message) }}" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</a>
+                                            <div class="flex items-center space-x-3">
+                                                <a href="{{ route('messages.show', $message) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">View</a>
+                                                @if($message->status === 'draft')
+                                                    <form method="POST" action="{{ route('messages.sendNow', $message) }}" class="inline" onsubmit="return confirm('Send this message now?');">
+                                                        @csrf
+                                                        <button type="submit" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">Send</button>
+                                                    </form>
+                                                @endif
+                                                <a href="{{ route('messages.edit', $message) }}" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">Edit</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

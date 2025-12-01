@@ -43,7 +43,7 @@ class MessageController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'message_type' => ['required', 'string', 'in:welcome,class_reminder,mentorship_assigned,general'],
+            'message_type' => ['required', 'string', 'in:welcome,class_reminder,mentorship_assigned,general,custom'],
             'channel' => ['required', 'string', 'in:email'],
             'subject' => ['nullable', 'string', 'max:255'],
             'content' => ['required', 'string'],
@@ -70,8 +70,27 @@ class MessageController extends Controller
             ],
         ]);
 
+        // If immediate, send the message right away
+        if ($validated['schedule_type'] === 'immediate') {
+            try {
+                $results = $this->messageService->sendMessage($message);
+                
+                if ($results['success'] > 0) {
+                    return redirect()->route('messages.index')
+                        ->with('success', "Message sent successfully to {$results['success']} recipient(s)." . 
+                            ($results['failed'] > 0 ? " {$results['failed']} failed." : ''));
+                } else {
+                    return redirect()->route('messages.index')
+                        ->with('error', 'Failed to send message. ' . implode(', ', array_slice($results['errors'], 0, 3)));
+                }
+            } catch (\Exception $e) {
+                return redirect()->route('messages.index')
+                    ->with('error', 'Error sending message: ' . $e->getMessage());
+            }
+        }
+
         return redirect()->route('messages.index')
-            ->with('success', 'Message created successfully.');
+            ->with('success', 'Message scheduled successfully.');
     }
 
     /**

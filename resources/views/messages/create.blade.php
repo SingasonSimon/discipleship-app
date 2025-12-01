@@ -104,9 +104,9 @@
                             <a href="{{ route('messages.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Create Message
-                            </button>
+                            <x-loading-button type="submit" class="bg-blue-500 hover:bg-blue-700">
+                                <span id="submit-text">Create Message</span>
+                            </x-loading-button>
                         </div>
                     </form>
                 </div>
@@ -117,10 +117,26 @@
     <script>
         document.getElementById('schedule_type').addEventListener('change', function() {
             const scheduledAtField = document.getElementById('scheduled_at_field');
+            const submitText = document.getElementById('submit-text');
             if (this.value === 'scheduled') {
                 scheduledAtField.classList.remove('hidden');
+                if (submitText) submitText.textContent = 'Schedule Message';
             } else {
                 scheduledAtField.classList.add('hidden');
+                if (submitText) submitText.textContent = 'Send Message';
+            }
+        });
+        
+        // Update button text on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const scheduleType = document.getElementById('schedule_type');
+            const submitText = document.getElementById('submit-text');
+            if (scheduleType && submitText) {
+                if (scheduleType.value === 'immediate') {
+                    submitText.textContent = 'Send Message';
+                } else {
+                    submitText.textContent = 'Schedule Message';
+                }
             }
         });
     </script>

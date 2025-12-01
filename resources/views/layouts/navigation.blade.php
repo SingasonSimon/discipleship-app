@@ -32,6 +32,13 @@
                     {{ __('Mentorships') }}
                 </x-nav-link>
             @endcan
+            
+            @if(auth()->user()->isAdmin() || auth()->user()->isPastor())
+                <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                    {{ __('Messages') }}
+                </x-nav-link>
+            @endif
+            
             @if(auth()->user()->isAdmin())
                 <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
                     {{ __('Admin') }}
@@ -144,6 +151,13 @@
                             {{ __('Mentorships') }}
                         </x-responsive-nav-link>
                     @endcan
+                    
+                    @if(auth()->user()->isAdmin() || auth()->user()->isPastor())
+                        <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
+                            {{ __('Messages') }}
+                        </x-responsive-nav-link>
+                    @endif
+                    
                     @if(auth()->user()->isAdmin())
                         <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
                             {{ __('Admin') }}
