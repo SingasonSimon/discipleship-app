@@ -22,14 +22,22 @@ class ClassController extends Controller
     public function index(Request $request): View
     {
         // All authenticated users can view classes list (members can browse, mentors can manage)
-        $query = DiscipleshipClass::with(['mentor', 'sessions']);
+        $query = DiscipleshipClass::with(['mentor', 'creator', 'sessions']);
 
         // Role-based filtering: Pastors and mentors should only see their own classes
+        // BUT: Classes created by admins should be visible to all roles
         $user = auth()->user();
         if ($user->isPastor() || $user->isMentor()) {
-            $query->where('mentor_id', $user->id);
+            $query->where(function ($q) use ($user) {
+                // See classes where they are the mentor
+                $q->where('mentor_id', $user->id)
+                  // OR classes created by admins (visible to all)
+                  ->orWhereHas('creator', function ($creatorQuery) {
+                      $creatorQuery->where('role', 'admin');
+                  });
+            });
         }
-        // Admins can see all classes (no filter)
+        // Admins and members can see all classes (no filter)
 
         // Search functionality
         if ($request->filled('search')) {
