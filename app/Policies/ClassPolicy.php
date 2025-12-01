@@ -31,7 +31,8 @@ class ClassPolicy
      */
     public function create(User $user): bool
     {
-        return $user->canManageClasses();
+        // Only admins and pastors can create classes, not mentors
+        return $user->isAdmin() || $user->isPastor();
     }
 
     /**
@@ -39,7 +40,8 @@ class ClassPolicy
      */
     public function update(User $user, DiscipleshipClass $class): bool
     {
-        return $user->canManageClasses() || $user->id === $class->mentor_id;
+        // Only admins and pastors can update classes, mentors have read-only access
+        return $user->isAdmin() || $user->isPastor();
     }
 
     /**
@@ -72,7 +74,8 @@ class ClassPolicy
      */
     public function manageSessions(User $user, DiscipleshipClass $class): bool
     {
-        return $user->canManageClasses() || $user->id === $class->mentor_id;
+        // Only admins and pastors can manage sessions, mentors have read-only access
+        return $user->isAdmin() || $user->isPastor();
     }
 
     /**

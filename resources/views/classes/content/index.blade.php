@@ -75,27 +75,65 @@
                                                 </div>
                                                 
                                                 <h4 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                                                    <a href="{{ route('classes.content.show', [$class, $content]) }}" class="hover:text-indigo-600 dark:hover:text-indigo-400">
-                                                        {{ $content->title }}
-                                                    </a>
+                                                    {{ $content->title }}
                                                 </h4>
                                                 
                                                 @if($content->content)
-                                                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                                                        {{ Str::limit(strip_tags($content->content), 150) }}
-                                                    </p>
+                                                    <div class="mb-3">
+                                                        <div id="content-preview-{{ $content->id }}" class="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                                                            {{ Str::limit(strip_tags($content->content), 200) }}
+                                                        </div>
+                                                        <div id="content-full-{{ $content->id }}" class="hidden text-sm text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none">
+                                                            {!! nl2br(e($content->content)) !!}
+                                                        </div>
+                                                        <button type="button" onclick="toggleContent({{ $content->id }})" class="mt-2 text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 focus:outline-none">
+                                                            <span id="toggle-text-{{ $content->id }}">View Full Content</span>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                                
+                                                @if($content->additional_notes)
+                                                    <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
+                                                        <p class="text-xs font-medium text-blue-900 dark:text-blue-100 mb-1">Additional Notes:</p>
+                                                        <p class="text-xs text-blue-800 dark:text-blue-200 whitespace-pre-wrap">{{ $content->additional_notes }}</p>
+                                                    </div>
                                                 @endif
                                                 
                                                 @if($content->attachments && count($content->attachments) > 0)
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                        {{ count($content->attachments) }} attachment(s)
-                                                    </p>
+                                                    <div class="mb-2">
+                                                        <p class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Attachments:</p>
+                                                        <div class="space-y-1">
+                                                            @foreach($content->attachments as $attachment)
+                                                                <div class="flex items-center space-x-2">
+                                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                                                    </svg>
+                                                                    <a href="{{ $attachment }}" target="_blank" rel="noopener noreferrer" class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 truncate max-w-xs">
+                                                                        {{ basename($attachment) }}
+                                                                    </a>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
                                                 @endif
+                                                
+                                                <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                                    Created by {{ $content->creator->name ?? 'Unknown' }} on {{ $content->created_at->format('M d, Y') }}
+                                                    @if($content->updated_at != $content->created_at)
+                                                        • Updated {{ $content->updated_at->format('M d, Y') }}
+                                                    @endif
+                                                </div>
                                             </div>
                                             
-                                            <div class="flex space-x-2 ml-4">
+                                            <div class="flex flex-col space-y-2 ml-4">
+                                                <a href="{{ route('classes.content.show', [$class, $content]) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300" title="View Full Page">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
+                                                </a>
                                                 @can('manageSessions', $class)
-                                                    <a href="{{ route('classes.content.edit', [$class, $content]) }}" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
+                                                    <a href="{{ route('classes.content.edit', [$class, $content]) }}" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300" title="Edit">
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                                         </svg>
@@ -121,7 +159,7 @@
                                                     <form action="{{ route('classes.content.destroy', [$class, $content]) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this content?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                        <button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300" title="Delete">
                                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                             </svg>
@@ -139,5 +177,25 @@
             @endif
         </div>
     </div>
+
+    <script>
+        function toggleContent(contentId) {
+            const preview = document.getElementById('content-preview-' + contentId);
+            const full = document.getElementById('content-full-' + contentId);
+            const toggleText = document.getElementById('toggle-text-' + contentId);
+            
+            if (preview && full && toggleText) {
+                if (preview.classList.contains('hidden')) {
+                    preview.classList.remove('hidden');
+                    full.classList.add('hidden');
+                    toggleText.textContent = 'View Full Content';
+                } else {
+                    preview.classList.add('hidden');
+                    full.classList.remove('hidden');
+                    toggleText.textContent = 'Show Less';
+                }
+            }
+        }
+    </script>
 </x-app-layout>
 

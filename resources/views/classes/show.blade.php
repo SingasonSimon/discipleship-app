@@ -5,19 +5,23 @@
                 {{ $class->title }}
             </h2>
             <div class="flex space-x-2">
-                @can('update', $class)
-                    <a href="{{ route('classes.edit', $class) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-                        Edit
-                    </a>
-                @endcan
-                @can('manageSessions', $class)
-                    <a href="{{ route('classes.content.index', $class) }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-                        Manage Content
-                    </a>
-                    <a href="{{ route('classes.sessions.create', $class) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                        Add Session
-                    </a>
-                @endcan
+                @if(auth()->user()->isAdmin() || auth()->user()->isPastor())
+                    @can('update', $class)
+                        <a href="{{ route('classes.edit', $class) }}" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                            Edit
+                        </a>
+                    @endcan
+                @endif
+                @if(auth()->user()->isAdmin() || auth()->user()->isPastor())
+                    @can('manageSessions', $class)
+                        <a href="{{ route('classes.content.index', $class) }}" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                            Manage Content
+                        </a>
+                        <a href="{{ route('classes.sessions.create', $class) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                            Add Session
+                        </a>
+                    @endcan
+                @endif
                 <a href="{{ route('classes.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     Back to Classes
                 </a>
@@ -462,14 +466,16 @@
                             </a>
                         @endcan
 
-                        @can('update', $class)
-                            <a href="{{ route('classes.edit', $class) }}" class="flex flex-col items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
-                                <svg class="w-8 h-8 text-yellow-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                                <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Edit Class</span>
-                            </a>
-                        @endcan
+                        @if(auth()->user()->isAdmin() || auth()->user()->isPastor())
+                            @can('update', $class)
+                                <a href="{{ route('classes.edit', $class) }}" class="flex flex-col items-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
+                                    <svg class="w-8 h-8 text-yellow-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Edit Class</span>
+                                </a>
+                            @endcan
+                        @endif
                     </div>
                 </div>
             </div>

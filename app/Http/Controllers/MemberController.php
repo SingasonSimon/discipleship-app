@@ -26,7 +26,15 @@ class MemberController extends Controller
      */
     public function index(Request $request): View
     {
+        $user = auth()->user();
         $query = Member::query();
+
+        // For mentors: only show members they're linked to via mentorships
+        if ($user->isMentor()) {
+            $query->whereHas('mentorships', function ($q) use ($user) {
+                $q->where('mentor_id', $user->id);
+            });
+        }
 
         // Search functionality
         if ($request->filled('search')) {

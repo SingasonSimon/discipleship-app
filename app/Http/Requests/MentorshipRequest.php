@@ -23,6 +23,20 @@ class MentorshipRequest extends FormRequest
     public function rules(): array
     {
         $mentorshipId = $this->route('mentorship')?->id;
+        $user = $this->user();
+
+        // For mentors: mentor_id is optional (will be auto-set to current user)
+        // For admins: mentor_id is required
+        $mentorIdRules = ['nullable'];
+        if ($user->isAdmin()) {
+            $mentorIdRules = [
+                'required',
+                'exists:users,id',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('role', 'mentor'); // Only users with 'mentor' role can be mentors
+                }),
+            ];
+        }
 
         return [
             'member_id' => [
@@ -32,13 +46,7 @@ class MentorshipRequest extends FormRequest
                     $query->where('status', 'active');
                 }),
             ],
-            'mentor_id' => [
-                'required',
-                'exists:users,id',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('role', 'mentor'); // Only users with 'mentor' role can be mentors
-                }),
-            ],
+            'mentor_id' => $mentorIdRules,
             'start_date' => ['required', 'date', 'before_or_equal:today'],
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'status' => ['required', 'in:active,completed,paused'],

@@ -85,14 +85,20 @@ class MentorshipController extends Controller
             abort(403, 'Access denied. Pastors can only view mentorships.');
         }
 
+        $user = auth()->user();
         $members = Member::whereDoesntHave('mentorships', function ($query) {
             $query->where('status', 'active');
         })->orderBy('full_name')->get();
 
-        // Only users with 'mentor' role can be mentors (not pastors or admins)
-        $mentors = User::where('role', 'mentor')
-                      ->orderBy('name')
-                      ->get();
+        // For mentors: auto-set mentor_id to current user, don't show mentor selection
+        // For admins: show mentor selection dropdown
+        $mentors = null;
+        if ($user->isAdmin()) {
+            // Only users with 'mentor' role can be mentors (not pastors or admins)
+            $mentors = User::where('role', 'mentor')
+                          ->orderBy('name')
+                          ->get();
+        }
 
         return view('mentorships.create', compact('members', 'mentors'));
     }
@@ -107,7 +113,15 @@ class MentorshipController extends Controller
             abort(403, 'Access denied. Pastors can only view mentorships.');
         }
 
-        $mentorship = Mentorship::create($request->validated());
+        $user = auth()->user();
+        $validated = $request->validated();
+
+        // For mentors: auto-set mentor_id to current user
+        if ($user->isMentor()) {
+            $validated['mentor_id'] = $user->id;
+        }
+
+        $mentorship = Mentorship::create($validated);
 
         return redirect()
             ->route('mentorships.show', $mentorship)

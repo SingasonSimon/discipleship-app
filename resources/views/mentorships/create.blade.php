@@ -36,24 +36,29 @@
                             @enderror
                         </div>
 
-                        <!-- Mentor Selection -->
-                        <div>
-                            <label for="mentor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Mentor <span class="text-red-500">*</span>
-                            </label>
-                            <select name="mentor_id" id="mentor_id" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                                <option value="">Select a mentor</option>
-                                @foreach($mentors as $mentor)
-                                    <option value="{{ $mentor->id }}" {{ old('mentor_id') == $mentor->id ? 'selected' : '' }}>
-                                        {{ $mentor->name }} ({{ ucfirst($mentor->role) }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('mentor_id')
-                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                            @enderror
-                        </div>
+                        <!-- Mentor Selection (only for admins) -->
+                        @if(auth()->user()->isAdmin() && $mentors)
+                            <div>
+                                <label for="mentor_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Mentor <span class="text-red-500">*</span>
+                                </label>
+                                <select name="mentor_id" id="mentor_id" required
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <option value="">Select a mentor</option>
+                                    @foreach($mentors as $mentor)
+                                        <option value="{{ $mentor->id }}" {{ old('mentor_id') == $mentor->id ? 'selected' : '' }}>
+                                            {{ $mentor->name }} ({{ ucfirst($mentor->role) }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('mentor_id')
+                                    <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @else
+                            <!-- For mentors: auto-set mentor_id to current user (hidden field) -->
+                            <input type="hidden" name="mentor_id" value="{{ auth()->id() }}">
+                        @endif
 
                         <!-- Start Date -->
                         <div>

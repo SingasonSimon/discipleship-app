@@ -241,12 +241,26 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get pastor-specific data
+     * Get pastor/mentor-specific data
      */
     private function getPastorData(?User $user = null): array
     {
         $user = $user ?? auth()->user();
 
+        // For mentors: only count members they're linked to via mentorships
+        if ($user->isMentor()) {
+            return [
+                'myClasses' => DiscipleshipClass::byMentor($user->id)->count(),
+                'mySessions' => ClassSession::whereHas('class', function ($query) use ($user) {
+                    $query->where('mentor_id', $user->id);
+                })->count(),
+                'myMembers' => Member::whereHas('mentorships', function ($query) use ($user) {
+                    $query->where('mentor_id', $user->id);
+                })->distinct()->count(),
+            ];
+        }
+
+        // For pastors: count members from their classes
         return [
             'myClasses' => DiscipleshipClass::byMentor($user->id)->count(),
             'mySessions' => ClassSession::whereHas('class', function ($query) use ($user) {
