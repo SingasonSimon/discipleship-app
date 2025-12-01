@@ -100,45 +100,61 @@ class ClassController extends Controller
      */
     public function store(ClassRequest $request)
     {
-        $this->authorize('create', DiscipleshipClass::class);
-        
-        $validated = $request->validated();
-        $weeklyTopics = $validated['weekly_topics'] ?? [];
-        $weeklyContent = $validated['weekly_content'] ?? [];
-        
-        // Remove weekly topics/content from validated data before creating class
-        unset($validated['weekly_topics'], $validated['weekly_content']);
-        
-        $classOutline = $validated['class_outline'] ?? null;
-        unset($validated['class_outline']);
-        
-        $class = DiscipleshipClass::create($validated);
+        try {
+            $this->authorize('create', DiscipleshipClass::class);
+            
+            $validated = $request->validated();
+            $weeklyTopics = $validated['weekly_topics'] ?? [];
+            $weeklyContent = $validated['weekly_content'] ?? [];
+            
+            // Remove weekly topics/content from validated data before creating class
+            unset($validated['weekly_topics'], $validated['weekly_content']);
+            
+            $classOutline = $validated['class_outline'] ?? null;
+            unset($validated['class_outline']);
+            
+            $class = DiscipleshipClass::create($validated);
 
-        // Create class outline as the first content item if provided
-        if (!empty($classOutline)) {
-            \App\Models\ClassContent::create([
-                'class_id' => $class->id,
-                'title' => 'Class Outline',
-                'content' => $classOutline,
-                'content_type' => \App\Models\ClassContent::TYPE_OUTLINE,
-                'week_number' => null,
-                'order' => 0,
-                'is_published' => true,
-                'created_by' => auth()->id(),
+            // Create class outline as the first content item if provided
+            if (!empty($classOutline)) {
+                \App\Models\ClassContent::create([
+                    'class_id' => $class->id,
+                    'title' => 'Class Outline',
+                    'content' => $classOutline,
+                    'content_type' => \App\Models\ClassContent::TYPE_OUTLINE,
+                    'week_number' => null,
+                    'order' => 0,
+                    'is_published' => true,
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
+            // Generate sessions with weekly topics if provided
+            if (!empty($weeklyTopics)) {
+                $this->generateSessionsWithTopics($class, $weeklyTopics, $weeklyContent);
+            } else {
+                // Generate sessions with default topics if no topics provided
+                $class->generateSessions();
+            }
+
+            return redirect()
+                ->route('classes.show', $class)
+                ->with('success', 'Discipleship class created successfully with ' . $class->sessions()->count() . ' sessions.');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()
+                ->route('classes.create')
+                ->with('error', 'You do not have permission to create classes.');
+        } catch (\Exception $e) {
+            \Log::error('Error creating class: ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
             ]);
+            
+            return redirect()
+                ->route('classes.create')
+                ->withInput()
+                ->with('error', 'An error occurred while creating the class. Please try again. Error: ' . $e->getMessage());
         }
-
-        // Generate sessions with weekly topics if provided
-        if (!empty($weeklyTopics)) {
-            $this->generateSessionsWithTopics($class, $weeklyTopics, $weeklyContent);
-        } else {
-            // Generate sessions with default topics if no topics provided
-            $class->generateSessions();
-        }
-
-        return redirect()
-            ->route('classes.show', $class)
-            ->with('success', 'Discipleship class created successfully with ' . $class->sessions()->count() . ' sessions.');
     }
 
     /**
