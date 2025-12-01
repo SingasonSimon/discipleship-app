@@ -113,6 +113,9 @@ class ClassController extends Controller
             $classOutline = $validated['class_outline'] ?? null;
             unset($validated['class_outline']);
             
+            // Set created_by to the current user
+            $validated['created_by'] = auth()->id();
+            
             $class = DiscipleshipClass::create($validated);
 
             // Create class outline as the first content item if provided
