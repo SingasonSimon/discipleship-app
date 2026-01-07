@@ -52,9 +52,9 @@ class SessionTest extends TestCase
         $this->actingAs($this->admin);
 
         $class = DiscipleshipClass::factory()->create(['mentor_id' => $this->admin->id]);
-        $session = ClassSession::factory()->create(['class_id' => $class->id]);
+        ClassSession::factory()->create(['class_id' => $class->id]);
 
-        $response = $this->get("/sessions/{$session->id}/statistics");
+        $response = $this->get("/classes/{$class->id}/sessions/statistics");
 
         $response->assertOk();
         $response->assertViewIs('sessions.statistics');

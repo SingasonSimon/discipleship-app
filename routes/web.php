@@ -57,8 +57,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('classes.sessions', SessionController::class)->shallow();
     Route::get('/sessions/{session}/attendance', [SessionController::class, 'attendance'])->name('sessions.attendance');
     Route::post('/sessions/{session}/send-google-meet-link', [SessionController::class, 'sendGoogleMeetLink'])->name('sessions.sendGoogleMeetLink');
-    Route::get('/sessions/{session}/upcoming', [SessionController::class, 'upcoming'])->name('sessions.upcoming');
-    Route::get('/sessions/{session}/statistics', [SessionController::class, 'statistics'])->name('sessions.statistics');
+    Route::get('/classes/{class}/sessions/upcoming', [SessionController::class, 'upcoming'])->name('sessions.upcoming');
+    Route::get('/classes/{class}/sessions/statistics', [SessionController::class, 'statistics'])->name('sessions.statistics');
 
     // Attendance routes
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');

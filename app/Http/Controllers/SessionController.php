@@ -196,14 +196,9 @@ class SessionController extends Controller
 
     /**
      * Get upcoming sessions for a class.
-     * Note: This route expects a session parameter but is actually for a class.
-     * This should be refactored to use class parameter instead.
      */
-    public function upcoming(ClassSession $session): View
+    public function upcoming(DiscipleshipClass $class): View
     {
-        $session->load('class');
-        $class = $session->class;
-        
         $this->authorize('view', $class);
 
         $upcomingSessions = $class->sessions()
@@ -216,14 +211,9 @@ class SessionController extends Controller
 
     /**
      * Get session statistics for a class.
-     * Note: This route expects a session parameter but is actually for a class.
-     * This should be refactored to use class parameter instead.
      */
-    public function statistics(ClassSession $session): View
+    public function statistics(DiscipleshipClass $class): View
     {
-        $session->load('class');
-        $class = $session->class;
-        
         $this->authorize('view', $class);
 
         $sessions = $class->sessions()
